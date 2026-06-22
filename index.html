@@ -914,6 +914,15 @@ modules.forEach(p => {
     let el;
     if (p.target === 0) {
       el = document.querySelector('.hero');
+    } else if (p.target === '概念总结') {
+      const headers = document.querySelectorAll('.concept-header h3');
+      for (const h of headers) {
+        if (h.textContent.includes('概念总结')) {
+          el = h.closest('.concept');
+          if (el && !el.classList.contains('open')) el.classList.add('open');
+          break;
+        }
+      }
     } else {
       const titles = document.querySelectorAll('.part-title');
       for (const t of titles) {
@@ -956,7 +965,14 @@ details.forEach(p => {
   btn.addEventListener('click', () => {
     let el;
     if (p.target === '概念总结') {
-      el = document.querySelector('.part-title:nth-of-type(5)');
+      const headers = document.querySelectorAll('.concept-header h3');
+      for (const h of headers) {
+        if (h.textContent.includes('概念总结')) {
+          el = h.closest('.concept');
+          if (el && !el.classList.contains('open')) el.classList.add('open');
+          break;
+        }
+      }
     } else {
       const headers = document.querySelectorAll('.concept-header h3');
       for (const h of headers) {
