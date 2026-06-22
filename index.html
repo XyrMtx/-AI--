@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认识AI — 从入门到理解</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #faf8f5;
+    --bg-card: #ffffff;
+    --bg-code: #f5f2ee;
+    --text: #3d3a36;
+    --text-dim: #8a8580;
+    --text-light: #b5b0ab;
+    --border: #e8e4de;
+    --primary: #b8860b;
+    --primary-light: #d4a843;
+    --primary-bg: rgba(184, 134, 11, 0.08);
+    --accent-green: #6b8e5a;
+    --accent-yellow: #c9a94e;
+    --accent-red: #c45a4a;
+    --accent-blue: #6a8fa8;
+    --accent-purple: #8b7aa8;
+    --shadow: rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: "Noto Serif SC", "Source Han Serif CN", "STSong", "宋体", "Georgia", serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 2;
+    font-size: 16px;
+  }
+
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 56px; z-index: 1000;
+    background: rgba(250, 248, 245, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 20px;
+    gap: 6px;
+    overflow-x: auto;
+  }
+  .top-nav::-webkit-scrollbar { height: 0; }
+  .second-nav {
+    position: fixed; top: 56px; left: 0; right: 0;
+    height: 44px; z-index: 999;
+    background: rgba(250, 248, 245, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 16px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .second-nav::-webkit-scrollbar { height: 0; }
+  .nav-btn {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .25s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+  .nav-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  .nav-divider {
+    flex-shrink: 0;
+    width: 1px; height: 20px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  .nav-btn-sm {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .25s;
+    white-space: nowrap;
+  }
+  .nav-btn-sm:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+  .nav-btn-sm.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  .container { max-width: 920px; margin: 0 auto; padding: 130px 24px 60px; }
+
+  .hero {
+    text-align: center;
+    padding: 100px 20px 70px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .hero::after {
+    content: "❦";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-light);
+    font-size: 1.2rem;
+    background: var(--bg);
+    padding: 0 16px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--primary);
+  }
+  .hero .sub {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    letter-spacing: 4px;
+  }
+  .hero .badge {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 5px 20px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: .85rem;
+    letter-spacing: 2px;
+  }
+
+  .part-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 56px 0 28px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .part-title .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: .8rem;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .concept {
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    transition: all .3s;
+    overflow: hidden;
+    box-shadow: 0 1px 4px var(--shadow);
+  }
+  .concept:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(184, 134, 11, 0.06); }
+
+  .concept-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+  }
+  .concept-header h2, .concept-header h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+  }
+  .concept-header .icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    font-size: .95rem;
+    flex-shrink: 0;
+  }
+  .concept-header .arrow {
+    transition: transform .35s;
+    color: var(--text-light);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .concept.open .concept-header .arrow { transform: rotate(180deg); }
+
+  .concept-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .45s ease;
+  }
+  .concept.open .concept-body { max-height: 6000px; }
+
+  .concept-inner {
+    padding: 0 22px 22px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: .9rem;
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+  }
+  thead { background: var(--primary-bg); }
+  th, td {
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--primary); font-weight: 600; font-size: .85rem; letter-spacing: 1px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,0,0,.01); }
+
+  pre, .code-block {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-family: "Cascadia Code", "Fira Code", "Courier New", monospace;
+    font-size: .82rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--text);
+  }
+
+  blockquote, .summary {
+    background: var(--primary-bg);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 18px;
+    margin: 14px 0;
+    color: var(--text);
+    font-size: .92rem;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 1px 9px;
+    border-radius: 10px;
+    font-size: .78rem;
+    font-weight: 500;
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+  }
+  .tag-green { background: rgba(107, 142, 90, 0.1); color: var(--accent-green); }
+  .tag-yellow { background: rgba(201, 169, 78, 0.12); color: #8a7530; }
+  .tag-red { background: rgba(196, 90, 74, 0.1); color: var(--accent-red); }
+  .tag-blue { background: rgba(106, 143, 168, 0.1); color: var(--accent-blue); }
+  .tag-purple { background: rgba(139, 122, 168, 0.1); color: var(--accent-purple); }
+
+  .bar-group { margin: 10px 0; }
+  .bar-label { display: flex; justify-content: space-between; font-size: .82rem; margin-bottom: 3px; color: var(--text-dim); }
+  .bar-track { height: 20px; border-radius: 10px; background: var(--bg-code); overflow: hidden; display: flex; }
+  .bar-fill { height: 100%; display: flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; font-weight: 600; transition: width .6s; }
+
+  .flow {
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px;
+    margin: 16px 0; padding: 18px; background: var(--bg-code); border-radius: 10px; border: 1px solid var(--border);
+  }
+  .flow-item {
+    padding: 6px 14px; border-radius: 6px; font-size: .82rem; font-weight: 500; text-align: center;
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+  }
+  .flow-arrow { color: var(--text-light); font-size: 1.1rem; }
+  .flow-item.tool { background: rgba(106, 143, 168, 0.1); color: var(--accent-blue); }
+  .flow-item.agent { background: rgba(139, 122, 168, 0.15); color: var(--accent-purple); font-weight: 700; }
+  .flow-item.component { background: rgba(107, 142, 90, 0.1); color: var(--accent-green); }
+
+  .progress-wrap {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+    height: 2px; background: transparent;
+  }
+  .progress-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
+    transition: width .2s;
+  }
+
+  @media (max-width: 640px) {
+    .concept-header { padding: 12px 14px; }
+    .concept-inner { padding: 0 14px 14px; }
+    th, td { padding: 6px 8px; font-size: .8rem; }
+    .top-nav { padding: 0 10px; gap: 4px; }
+    .second-nav { padding: 0 8px; gap: 3px; }
+    .nav-btn { padding: 4px 8px; font-size: 11px; }
+    .nav-btn-sm { padding: 2px 7px; font-size: 10px; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    body { font-size: 15px; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .concept { animation: fadeUp .45s ease both; }
+  .concept:nth-child(2) { animation-delay: .04s; }
+  .concept:nth-child(3) { animation-delay: .08s; }
+  .concept:nth-child(4) { animation-delay: .12s; }
+</style>
+</head>
+<body>
+
+<nav class="top-nav" id="moduleNav"></nav>
+<nav class="second-nav" id="detailNav"></nav>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="container">
+
+<div class="hero">
+  <h1>认识<em>AI</em>：从入门到理解</h1>
+</div>
+
+<!-- 第一部分：认识AI -->
+<div class="part-title"><span class="num">1</span> 认识AI</div>
+
+<div class="concept" data-part="1">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(106,143,168,.1);color:var(--accent-blue)">&#x1F9E0;</span> 一、LLM —— 大语言模型</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>LLM 是所有大模型的统称</strong>，不是某一个具体的模型。就像"汽车"是一个品类，下面有丰田、宝马、特斯拉。</p>
+      <table>
+        <thead><tr><th>品类</th><th>公司</th><th>具体产品</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="7" style="font-weight:600;color:var(--primary)">LLM</td><td>OpenAI</td><td><strong>GPT-4、GPT-5</strong></td></tr>
+          <tr><td>Anthropic</td><td><strong>Claude 4、Claude 5</strong></td></tr>
+          <tr><td>Google</td><td><strong>Gemini 2.5</strong></td></tr>
+          <tr><td>DeepSeek（深度求索）</td><td><strong>DeepSeek-V4</strong></td></tr>
+          <tr><td>阿里巴巴</td><td><strong>Qwen</strong></td></tr>
+          <tr><td>字节跳动</td><td><strong>豆包</strong></td></tr>
+          <tr><td>月之暗面</td><td><strong>Kimi</strong></td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;font-weight:600">两个特点：</p>
+      <table>
+        <thead><tr><th>特点</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-green">&#x2705; 能力强</span></td><td>能写论文、能总结、能翻译</td></tr>
+          <tr><td><span class="tag tag-red">&#x26A0;&#xFE0F; 只动口不动手</span></td><td>只能输出文字，不能直接操作文件</td></tr>
+        </tbody>
+      </table>
+      <div class="summary">LLM 是所有大模型的统称。你平时用的豆包、Kimi、DeepSeek、Claude，都是 LLM。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="1">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(201,169,78,.12);color:#8a7530">&#x1F4AC;</span> 二、Prompt —— 提示词</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>Prompt 就是"你跟 AI 说的那句话"。</strong> 先给身份和场景，AI 就能给出更精准的回答。</p>
+      <table>
+        <thead><tr><th>差的 Prompt</th><th>好的 Prompt</th></tr></thead>
+        <tbody>
+          <tr><td>"帮我写论文"</td><td>"我是社会工作本科生，要写一篇医务社会工作的课程论文，3000字，需有文献综述"</td></tr>
+          <tr><td>"翻译一下"</td><td>"这是一篇医学论文摘要，请翻译成中文，保持学术风格"</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:10px 0"><strong>原因：</strong>LLM 见过几乎所有场景。你告诉它你是谁、要什么，它就能匹配最合适的回答模式。</p>
+      <p style="font-weight:600">好 Prompt 的 5W1H：</p>
+      <table>
+        <thead><tr><th>要素</th><th>意思</th><th>你的例子</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Who</strong></td><td>你是谁</td><td>社会工作本科生</td></tr>
+          <tr><td><strong>What</strong></td><td>你要什么</td><td>课程论文</td></tr>
+          <tr><td><strong>Where</strong></td><td>用在什么场景</td><td>医务社会工作课程</td></tr>
+          <tr><td><strong>Why</strong></td><td>目的是什么</td><td>完成作业</td></tr>
+          <tr><td><strong>How</strong></td><td>有什么要求</td><td>3000字、学术风格</td></tr>
+        </tbody>
+      </table>
+      <div class="summary">Prompt 就是"你跟 AI 说的那句话"。把背景交代清楚，AI 的回答就好用。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="1">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(107,142,90,.1);color:var(--accent-green)">&#x1F522;</span> 三、Token —— 计费单位</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>Token 就是大模型世界的"字数"。</strong></p>
+      <table>
+        <thead><tr><th>内容</th><th>约等于</th></tr></thead>
+        <tbody>
+          <tr><td>1 个汉字</td><td>&#x2248; 1.5 ~ 2 个 token</td></tr>
+          <tr><td>1 个英文单词</td><td>&#x2248; 1 ~ 2 个 token</td></tr>
+        </tbody>
+      </table>
+      <p style="color:#8a7530;font-size:.88rem">快速估算：汉字按 1 字 &#x2248; 2 token 来算，基本够用。</p>
+      <p style="margin-top:12px;font-weight:600">为什么叫 Token？</p>
+      <p>大模型不认识汉字，只认识数字。Token 就是把文字切成小段、每段编个号：</p>
+      <div class="code-block">
+"我是社会工作专业的本科生"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&darr; 分词<br>
+["我", "是", "社会", "工作", "专业", "的", "本科", "生"]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&darr; 转编号<br>
+[1024, 356, 7789, 4512, 8832, 128, 5631, 445]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&darr; 模型只处理这些数字
+      </div>
+      <p style="font-weight:600">一次对话大概花多少 Token？</p>
+      <table>
+        <thead><tr><th>场景</th><th>大约 Token 数</th></tr></thead>
+        <tbody>
+          <tr><td>一次简单问答</td><td>几百 ~ 几千</td></tr>
+          <tr><td>读一篇论文</td><td>几千 ~ 几万</td></tr>
+          <tr><td>写一篇课程论文</td><td>几千</td></tr>
+        </tbody>
+      </table>
+      <div class="summary">Token 就是大模型的"字数"，汉字大约 1 字 &#x2248; 2 token。厂商按 Token 收费，就像作文按字数算钱。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="1">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(139,122,168,.1);color:var(--accent-purple)">&#x1F4DD;</span> 四、Markdown 格式的优势</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>同样一句话，三种格式的 Token 消耗完全不同：</strong></p>
+      <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:8px">以"<strong>医务社会工作概论</strong>"这句话为例：</p>
+      <div class="bar-group">
+        <div class="bar-label"><span>Markdown：<code>**医务社会工作概论**</code></span><span>最少 &#x2705;</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--accent-green)">约 8 token</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>HTML：<code>&lt;strong&gt;医务社会工作概论&lt;/strong&gt;</code></span><span>中等 &#x274C;</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:38%;background:#c9a94e">约 14 token</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Word (.docx)：XML 格式说明书包装</span><span>最多 &#x274C;</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--accent-red)">约 40+ token</div></div>
+      </div>
+      <p style="margin-top:14px;font-weight:600">Word 为什么这么费 Token？</p>
+      <p>Word 文件本质是一个压缩包，里面全是 XML 格式说明书：</p>
+      <div class="code-block">
+你看到的是：       医务社会工作概论（加粗）<br><br>
+Word 实际存的是：  "正文" + "宋体" + "三号" + "加粗"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ "行距1.5倍" + "段前0.5行"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ "首行缩进" + "居中对齐" + &hellip;&hellip;
+      </div>
+      <p style="font-weight:600">对比总结</p>
+      <table>
+        <thead><tr><th>对比项</th><th>Markdown</th><th>Word</th></tr></thead>
+        <tbody>
+          <tr><td>内容</td><td>纯文字 + 少量符号</td><td>文字 + 大量格式说明书</td></tr>
+          <tr><td>AI 能否直接读</td><td><span class="tag tag-green">&#x2705; 直接打开就能用</span></td><td><span class="tag tag-red">&#x274C; 需要转换</span></td></tr>
+          <tr><td>不同软件打开</td><td><span class="tag tag-green">&#x2705; 永远一样</span></td><td><span class="tag tag-yellow">&#x274C; Word/WPS 可能不一样</span></td></tr>
+          <tr><td>Token 消耗</td><td><span class="tag tag-green">最少</span></td><td><span class="tag tag-red">最多（3~10倍）</span></td></tr>
+        </tbody>
+      </table>
+      <div class="summary">Markdown 省 token 不是因为魔法，而是它没有"格式包装纸"——内容就是内容，干净利落。给 AI 看，Markdown 是最优解。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 第二部分：使用方式 -->
+<div class="part-title"><span class="num">2</span> 使用方式</div>
+
+<div class="concept" data-part="2">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(106,143,168,.1);color:var(--accent-blue)">&#x1F310;</span> 五、网页端 Chat</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>打开浏览器就能用的 AI，最简单的使用方式。</strong></p>
+      <p style="font-weight:600">国内主流产品对比</p>
+      <table>
+        <thead><tr><th>产品</th><th>厂商</th><th>特点</th><th>适合做什么</th></tr></thead>
+        <tbody>
+          <tr><td><strong>豆包</strong></td><td>字节跳动</td><td>界面简洁，回复快</td><td>日常问答、资料总结</td></tr>
+          <tr><td><strong>DeepSeek</strong></td><td>深度求索</td><td>推理能力强，中文好</td><td>论文思路梳理</td></tr>
+          <tr><td><strong>通义千问</strong></td><td>阿里巴巴</td><td>功能全面</td><td>文档分析、长文本处理</td></tr>
+          <tr><td><strong>Kimi</strong></td><td>月之暗面</td><td><strong>超长上下文</strong>，可一次读整本书</td><td>读长篇论文、整理大量资料</td></tr>
+        </tbody>
+      </table>
+      <p style="font-weight:600">网页 Chat 的核心局限</p>
+      <table>
+        <thead><tr><th>能力</th><th>网页 Chat</th></tr></thead>
+        <tbody>
+          <tr><td>回答问题</td><td><span class="tag tag-green">&#x2705; 能</span></td></tr>
+          <tr><td>上传文件让它分析</td><td><span class="tag tag-green">&#x2705; 能（手动上传）</span></td></tr>
+          <tr><td><strong>直接读取你电脑上的文件</strong></td><td><span class="tag tag-red">&#x274C; 不能</span></td></tr>
+          <tr><td><strong>直接修改你电脑上的文件</strong></td><td><span class="tag tag-red">&#x274C; 不能</span></td></tr>
+          <tr><td>需要你手动复制粘贴</td><td><span class="tag tag-yellow">&#x2705; 需要</span></td></tr>
+        </tbody>
+      </table>
+      <div class="summary">网页 Chat = 你动手，它动口。你得自己上传、自己复制、自己粘贴。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="2">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(107,142,90,.1);color:var(--accent-green)">&#x1F5A5;&#xFE0F;</span> 六、IDE —— 工作台</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>以 VS Code 为例说明</strong>——左边文件列表、中间编辑区、下面终端。</p>
+      <table>
+        <thead><tr><th>对比</th><th>网页 Chat</th><th>IDE 中的 AI</th></tr></thead>
+        <tbody>
+          <tr><td>能问答</td><td><span class="tag tag-green">&#x2705;</span></td><td><span class="tag tag-green">&#x2705;</span></td></tr>
+          <tr><td>能读你电脑的文件</td><td><span class="tag tag-red">&#x274C; 需手动上传</span></td><td><span class="tag tag-green">&#x2705; 直接读取</span></td></tr>
+          <tr><td>能修改你电脑的文件</td><td><span class="tag tag-red">&#x274C; 只能输出文字</span></td><td><span class="tag tag-green">&#x2705; 直接修改</span></td></tr>
+          <tr><td>需要你复制粘贴</td><td><span class="tag tag-yellow">&#x2705; 需要</span></td><td><span class="tag tag-green">&#x274C; 不需要</span></td></tr>
+          <tr><td>流程步骤</td><td>5~8 步</td><td><strong>1 步</strong></td></tr>
+        </tbody>
+      </table>
+      <p style="font-weight:600">同样"帮我修改论文第三段"：</p>
+      <div class="code-block">
+网页 Chat：
+  ① 打开论文 &#x2192; ② 复制第三段 &#x2192; ③ 粘贴到网页
+  ④ AI 给出新版本 &#x2192; ⑤ 复制 &#x2192; ⑥ 回到文件粘贴
+  &#x2192; 6步，其中4步是你做的
+
+IDE 中的 AI：
+  ① 说"帮我改一下第三段"
+  &#x2192; AI 直接打开文件 &#x2192; 修改 &#x2192; 保存
+  &#x2192; 1步
+      </div>
+      <div class="summary">不是 IDE 功能更丰富，而是 IDE 省掉了"上传&#x2192;下载&#x2192;复制&#x2192;粘贴"这些中间步骤。网页 Chat 能做的事，IDE 基本也能做，但 IDE 不需要你当"搬运工"。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="2">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(201,169,78,.12);color:#8a7530">&#x1F511;</span> 七、API —— 打开模型的钥匙</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>API Key 就是给程序用的"密码"。</strong></p>
+      <table>
+        <thead><tr><th></th><th>网页 Chat</th><th>API</th></tr></thead>
+        <tbody>
+          <tr><td>怎么证明你是谁</td><td>登录账号（手机号+验证码）</td><td><strong>API Key</strong>（一串密钥字符串）</td></tr>
+          <tr><td>谁在用</td><td><strong>人</strong>在操作</td><td><strong>程序</strong>在调用</td></tr>
+        </tbody>
+      </table>
+      <p style="font-weight:600">网页端 Chat 也在背后调用 API</p>
+      <div class="code-block">
+你在网页端 Chat 上打字发送
+  &#x2192; 网页在背后调用厂商的 API
+  &#x2192; 只是厂商帮你管好了 API Key
+  &#x2192; 你不需要自己看到它
+      </div>
+      <div class="summary">API Key 就是给程序用的"密码"，省掉了打开浏览器、登录、打字的步骤，让软件直接和 AI 对话。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="2">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(139,122,168,.1);color:var(--accent-purple)">&#x1F527;</span> 八、MCP —— 工具箱协议</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>MCP 是让一个模型可以使用很多个工具的协议。</strong></p>
+      <div class="code-block">
+MCP = 给模型配工具的"标准接口"
+       &darr;
+一个模型（比如 Claude）&#x2192; 通过 MCP &#x2192; 可以用无数种工具
+                                     &#x251C;&#x2500;&#x2500; 读文件
+                                     &#x251C;&#x2500;&#x2500; 写文件
+                                     &#x251C;&#x2500;&#x2500; 执行命令
+                                     &#x2514;&#x2500;&#x2500; 搜索代码
+      </div>
+      <p style="font-weight:600">为什么配置 Agent 扩展时没感觉需要配置 MCP？</p>
+      <p><strong>因为 Claude Code 这类 Agent 扩展默认已经配好了基础的 MCP 工具。</strong></p>
+      <div class="code-block">
+Claude Code 这类 Agent 扩展默认自带的 MCP 工具：
+  &#x251C;&#x2500;&#x2500; 文件系统操作（读文件、写文件）
+  &#x251C;&#x2500;&#x2500; 搜索（搜索项目文件）
+  &#x251C;&#x2500;&#x2500; 终端（执行命令）
+  &#x2514;&#x2500;&#x2500; &hellip;&hellip;
+
+你安装好 Agent 扩展后说"帮我看看这个文件"
+  &#x2192; 调用的就是默认的文件系统 MCP
+  &#x2192; 你已经在用 MCP 了，只是它是默认配好的
+      </div>
+      <div class="summary">MCP 就是让 AI 能"动手"的工具箱协议。Agent 扩展默认已经配好了基础工具，你知道它是什么就够了，不需要自己去配置。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 第三部分：进阶玩法 -->
+<div class="part-title"><span class="num">3</span> 进阶玩法</div>
+
+<div class="concept" data-part="3">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(106,143,168,.1);color:var(--accent-blue)">&#x1F4D6;</span> 九、RAG —— 检索增强生成</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>RAG 就是让 AI 在回答之前先"翻书"，基于找到的证据来回答，而不是凭记忆瞎编。</strong></p>
+      <p style="font-weight:600">RAG 的工作流程</p>
+      <div class="code-block">
+你提问
+    &darr;
+① 检索：去知识库里搜相关的内容
+    &darr;
+② 增强：把搜到的内容塞进 prompt
+    &darr;
+③ 生成：LLM 基于资料 + 自己的知识来回答
+      </div>
+      <p style="font-weight:600">RAG 和网页端 Chat 不是二选一</p>
+      <div class="code-block">
+网页 Chat = 使用方式（在浏览器里用）
+RAG      = 技术方法（先检索再回答）
+
+现在的网页 Chat 大多已经内置了 RAG：
+  你上传一篇论文到 Kimi
+  &#x2192; Kimi 先检索你上传的 PDF（RAG）
+  &#x2192; 再基于检索结果回答你
+      </div>
+      <p style="font-weight:600">真正的区别：检索范围不同</p>
+      <table>
+        <thead><tr><th></th><th>网页 Chat（带RAG）</th><th>IDE Agent（带RAG）</th></tr></thead>
+        <tbody>
+          <tr><td>有没有 RAG</td><td><span class="tag tag-green">&#x2705; 有</span></td><td><span class="tag tag-green">&#x2705; 有</span></td></tr>
+          <tr><td>能搜索网络信息吗</td><td><span class="tag tag-green">&#x2705; 能（联网搜索）</span></td><td><span class="tag tag-red">&#x274C; 默认不能</span></td></tr>
+          <tr><td>能搜索本地文件吗</td><td><span class="tag tag-red">&#x274C; 只能搜你上传的</span></td><td><span class="tag tag-green">&#x2705; 能搜你电脑全部文件</span></td></tr>
+        </tbody>
+      </table>
+      <div class="summary">RAG 就是让 AI 从"凭印象瞎说"变成"翻书再回答"。网页 Chat 翻的是网络和你上传的书，Agent 翻的是你电脑里的书——搜索范围不同。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="3">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(201,169,78,.12);color:#8a7530">&#x1F3AF;</span> 十、Fine-tuning（微调）</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p style="font-weight:600">RAG vs Fine-tuning</p>
+      <table>
+        <thead><tr><th>对比</th><th>RAG</th><th>Fine-tuning</th></tr></thead>
+        <tbody>
+          <tr><td>模型本身变了吗</td><td><span class="tag tag-red">&#x274C; 没变</span></td><td><span class="tag tag-green">&#x2705; 变了</span></td></tr>
+          <tr><td>效果来源</td><td>每次回答时检索资料</td><td>模型"记住"了你的数据</td></tr>
+          <tr><td>适合场景</td><td>知识问答、查资料</td><td>特定格式、特定风格、特定任务</td></tr>
+          <tr><td>成本</td><td>低（按token计费）</td><td>高（训练需要算力）</td></tr>
+          <tr><td>灵活性</td><td><span class="tag tag-green">&#x2705; 资料随时换</span></td><td><span class="tag tag-red">&#x274C; 训练完就固定了</span></td></tr>
+        </tbody>
+      </table>
+      <div class="summary">RAG 是给 AI 查资料，Fine-tuning 是给 AI 上课。对普通用户来说，RAG 更常用；只有需要"专属定制"时才考虑微调。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="3">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(107,142,90,.1);color:var(--accent-green)">&#x1F4E6;</span> 十一、开源模型</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>开源模型能避免隐私泄露——数据全程在你自己的电脑里。代价是有技术门槛。</strong></p>
+      <p style="font-weight:600">闭源 vs 开源</p>
+      <table>
+        <thead><tr><th>对比</th><th>闭源模型</th><th>开源模型</th></tr></thead>
+        <tbody>
+          <tr><td>例子</td><td>Claude、GPT、豆包</td><td>LLaMA、Qwen、DeepSeek（开源版）</td></tr>
+          <tr><td>能自己部署吗</td><td><span class="tag tag-red">&#x274C; 只能用厂商服务器</span></td><td><span class="tag tag-green">&#x2705; 可以下到自己的电脑</span></td></tr>
+          <tr><td>隐私</td><td><span class="tag tag-yellow">&#x26A0;&#xFE0F; 数据经过云端</span></td><td><span class="tag tag-green">&#x2705; 完全本地</span></td></tr>
+          <tr><td>门槛</td><td><span class="tag tag-green">&#x2B50; 低</span></td><td><span class="tag tag-red">&#x2B50;&#x2B50;&#x2B50; 高</span></td></tr>
+          <tr><td>费用</td><td><span class="tag tag-yellow">&#x1F4B0; 按量付费</span></td><td><span class="tag tag-green">&#x1F4A1; 免费，但要自己承担算力成本</span></td></tr>
+        </tbody>
+      </table>
+      <div class="summary">开源模型能避免隐私泄露，代价是有技术门槛。普通人图方便用网页 Chat 就好，敏感数据场景才值得去折腾开源。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 第四部分：工具速查 -->
+<div class="part-title"><span class="num">4</span> 工具速查</div>
+
+<div class="concept" data-part="4">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(139,122,168,.1);color:var(--accent-purple)">&#x1F916;</span> 十二、Agent —— 自主决策的助手</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <div class="code-block">
+LLM     = 大脑（会思考）
+API     = 钥匙（打开模型能力）
+MCP     = 工具箱（能动手）
+IDE     = 工作台（干活的地方）
+                &darr;
+    以上全部整合 = Agent（自主决策的助手）
+      </div>
+      <p style="font-weight:600">Agent 和普通 AI 调用的本质区别</p>
+      <table>
+        <thead><tr><th></th><th>普通 AI 调用</th><th>Agent</th></tr></thead>
+        <tbody>
+          <tr><td><strong>你告诉它</strong></td><td>一步步指挥</td><td>只说目标</td></tr>
+          <tr><td><strong>它怎么做</strong></td><td>你说一步它做一步</td><td><strong>自己规划步骤</strong></td></tr>
+          <tr><td><strong>会不会循环</strong></td><td><span class="tag tag-red">&#x274C; 一次完事</span></td><td><span class="tag tag-green">&#x2705; 思考&#x2192;行动&#x2192;观察&#x2192;再思考</span></td></tr>
+          <tr><td><strong>例子</strong></td><td>"先读这个文件，再总结给我"</td><td>"帮我整理这个文件夹"——它自己决定先读什么、再做什么</td></tr>
+        </tbody>
+      </table>
+      <p style="font-weight:600">Agent 的核心循环</p>
+      <div class="code-block">
+你派任务
+    &darr;
+Agent 思考：要完成这个任务，我需要什么？
+    &darr;
+Agent 行动：调用工具（读文件、搜资料、执行命令）
+    &darr;
+Agent 观察：工具返回了什么结果？
+    &darr;
+Agent 再思考：结果够了吗？还需要做什么？
+    &darr;
+&hellip;&hellip;循环直到任务完成
+      </div>
+      <p style="font-weight:600">常见的 Agent 产品</p>
+      <table>
+        <thead><tr><th>Agent</th><th>一句话</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Claude Code</strong></td><td>VS Code 里的编程助手（你正在用的）</td></tr>
+          <tr><td><strong>Codex CLI</strong></td><td>OpenAI 出的终端版 Agent</td></tr>
+          <tr><td><strong>GitHub Copilot</strong>（Agent 模式）</td><td>最早做代码补全的</td></tr>
+          <tr><td><strong>Cursor</strong></td><td>一打开就是 AI 优先的编辑器</td></tr>
+        </tbody>
+      </table>
+      <div class="summary">Agent = 大脑（LLM）+ 工具箱（MCP）+ 工作台（IDE）+ 自主决策。它不再等你一步步指挥，而是你说"要什么"，它自己想办法"做到"。</div>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="4">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(139,122,168,.1);color:var(--accent-purple)">&#x1F5A5;&#xFE0F;</span> 十三、Claude Desktop</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p style="font-weight:600">Claude Desktop vs Claude Code</p>
+      <table>
+        <thead><tr><th>对比</th><th>Claude Desktop</th><th>Claude Code</th></tr></thead>
+        <tbody>
+          <tr><td>形态</td><td>独立桌面应用</td><td>VS Code 插件 / 终端工具</td></tr>
+          <tr><td>主要用途</td><td><strong>通用 AI 助手</strong></td><td><strong>编程专用</strong></td></tr>
+          <tr><td>能操作本地文件</td><td><span class="tag tag-yellow">&#x2705; 需配置 MCP</span></td><td><span class="tag tag-green">&#x2705; 默认就能</span></td></tr>
+          <tr><td>能执行命令</td><td><span class="tag tag-yellow">&#x26A0;&#xFE0F; 需配置 MCP</span></td><td><span class="tag tag-green">&#x2705; 默认就能</span></td></tr>
+          <tr><td>适合非程序员吗</td><td><span class="tag tag-green">&#x2705; 友好</span></td><td><span class="tag tag-red">&#x274C; 需要懂编程</span></td></tr>
+        </tbody>
+      </table>
+      <p>需要外网环境 + 账号 + 付费。</p>
+    </div>
+  </div>
+</div>
+
+<div class="concept" data-part="4">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(106,143,168,.1);color:var(--accent-blue)">&#x26A1;</span> 十四、Ollama + Cherry Studio（离线方案）</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body">
+    <div class="concept-inner">
+      <p><strong>Ollama = 一行命令在本地跑各种开源模型的"管家"</strong></p>
+      <div class="code-block">
+以前在本地跑模型：折腾半天
+Ollama：ollama run qwen2.5 &#x2192; 自动下载 &#x2192; 自动跑 &#x2192; 直接对话
+      </div>
+      <p><strong>Cherry Studio = 一个"万能 AI 聊天桌面客户端"</strong></p>
+      <p>一个软件里可以切换各种模型：Claude、GPT、本地 Ollama 跑的模型……不用打开多个网页。</p>
+      <p style="color:#8a7530">通常搭配使用：Ollama（后台引擎）+ Cherry Studio（前台界面）</p>
+      <div class="summary">离线 Agent 最大的优势是免费、隐私、离线；最大的不足是模型能力弱、上下文短、速度慢。日常随便问问够用，正儿八经写论文还是云端模型更强。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 完整链路串联（总结） -->
+<div class="part-title"><span class="num">&#x2211;</span> 完整链路串联</div>
+
+<div class="concept open" data-part="5">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(139,122,168,.1);color:var(--accent-purple)">&#x1F517;</span> 从"窗口"到"助手"的进化</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body" style="max-height:6000px">
+    <div class="concept-inner">
+      <div class="flow">
+        <span class="flow-item component">LLM（大脑）</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-item component">API Key（钥匙）</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-item component">MCP（手脚）</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-item component">IDE（工作台）</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-item component">RAG（查资料）</span>
+        <span class="flow-arrow">=</span>
+        <span class="flow-item agent">Agent</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="concept open" data-part="5">
+  <div class="concept-header">
+    <h3><span class="icon" style="background:rgba(107,142,90,.1);color:var(--accent-green)">&#x1F4CA;</span> 概念总结</h3>
+    <span class="arrow">&#x25BE;</span>
+  </div>
+  <div class="concept-body" style="max-height:6000px">
+    <div class="concept-inner">
+      <table>
+        <thead><tr><th>概念</th><th>一句话</th></tr></thead>
+        <tbody>
+          <tr><td><strong>LLM</strong></td><td>大模型的统称，豆包、Kimi、Claude 都是 LLM</td></tr>
+          <tr><td><strong>Prompt</strong></td><td>你跟 AI 说的那句话</td></tr>
+          <tr><td><strong>Token</strong></td><td>大模型的"字数"，1汉字&#x2248;2token</td></tr>
+          <tr><td><strong>Markdown</strong></td><td>最省 token 的文档格式，没有格式包装纸</td></tr>
+          <tr><td><strong>网页 Chat</strong></td><td>打开浏览器就能用的 AI</td></tr>
+          <tr><td><strong>IDE</strong></td><td>VS Code 那个工作台</td></tr>
+          <tr><td><strong>API</strong></td><td>让程序调用模型的密码</td></tr>
+          <tr><td><strong>MCP</strong></td><td>让 AI 能动手的工具箱协议</td></tr>
+          <tr><td><strong>RAG</strong></td><td>让 AI 先翻书再回答，减少幻觉</td></tr>
+          <tr><td><strong>Fine-tuning</strong></td><td>用数据训练专属模型</td></tr>
+          <tr><td><strong>开源模型</strong></td><td>自己部署、数据不出门</td></tr>
+          <tr><td><strong>Agent</strong></td><td>能自主决策、自主干活的 AI</td></tr>
+          <tr><td><strong>Claude Desktop</strong></td><td>桌面版 Claude，可配 MCP</td></tr>
+          <tr><td><strong>Claude Code</strong></td><td>VS Code 里的编程助手</td></tr>
+          <tr><td><strong>Ollama</strong></td><td>一行命令跑本地模型</td></tr>
+          <tr><td><strong>Cherry Studio</strong></td><td>万能聊天界面，一个软件用所有模型</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:60px 20px 40px;border-top:1px solid var(--border);margin-top:40px">
+  <p style="font-size:1.2rem;font-weight:600;color:var(--primary);letter-spacing:2px">
+    &#x2766; 认识 AI，不是为了依赖它，而是为了更好地使用它。
+  </p>
+</div>
+
+</div>
+
+<script>
+document.querySelectorAll('.concept-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const card = header.parentElement;
+    card.classList.toggle('open');
+  });
+});
+
+// ── 上层导航：四大模块 ──
+const modules = [
+  { label: '封面', target: 0 },
+  { label: '认识AI', target: '认识AI' },
+  { label: '使用方式', target: '使用方式' },
+  { label: '进阶玩法', target: '进阶玩法' },
+  { label: '工具速查', target: '工具速查' },
+  { label: '完整串联', target: '完整链路串联' },
+  { label: '概念总结', target: '概念总结' },
+];
+
+const moduleNav = document.getElementById('moduleNav');
+modules.forEach(p => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-btn';
+  btn.textContent = p.label;
+  btn.dataset.target = p.target;
+  btn.addEventListener('click', () => {
+    let el;
+    if (p.target === 0) {
+      el = document.querySelector('.hero');
+    } else {
+      const titles = document.querySelectorAll('.part-title');
+      for (const t of titles) {
+        if (t.textContent.includes(p.target)) {
+          el = t;
+          break;
+        }
+      }
+    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  moduleNav.appendChild(btn);
+});
+
+// ── 下层导航：全部内容 ──
+const details = [
+  { label: 'LLM', target: '一' },
+  { label: 'Prompt', target: '二' },
+  { label: 'Token', target: '三' },
+  { label: 'Markdown', target: '四' },
+  { label: '网页Chat', target: '五' },
+  { label: 'IDE', target: '六' },
+  { label: 'API', target: '七' },
+  { label: 'MCP', target: '八' },
+  { label: 'RAG', target: '九' },
+  { label: '微调', target: '十' },
+  { label: '开源', target: '十一' },
+  { label: 'Agent', target: '十二' },
+  { label: 'Desktop', target: '十三' },
+  { label: '离线方案', target: '十四' },
+  { label: '概念总结', target: '概念总结' },
+];
+
+const detailNav = document.getElementById('detailNav');
+details.forEach(p => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-btn-sm';
+  btn.textContent = p.label;
+  btn.dataset.target = p.target;
+  btn.addEventListener('click', () => {
+    let el;
+    if (p.target === '概念总结') {
+      el = document.querySelector('.part-title:nth-of-type(5)');
+    } else {
+      const headers = document.querySelectorAll('.concept-header h3');
+      for (const h of headers) {
+        if (h.textContent.includes(p.target)) {
+          el = h.closest('.concept');
+          if (el && !el.classList.contains('open')) el.classList.add('open');
+          break;
+        }
+      }
+    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  detailNav.appendChild(btn);
+});
+
+// ── IntersectionObserver 高亮下导航 ──
+const observer = new IntersectionObserver(entries => {
+  let visible = [];
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = [...document.querySelectorAll('.concept')].indexOf(e.target);
+      if (idx >= 0) visible.push(idx);
+    }
+  });
+  if (visible.length === 0) return;
+  const first = Math.min(...visible);
+  const labels = ['LLM','Prompt','Token','Markdown','网页Chat','IDE','API','MCP','RAG','微调','开源','Agent','Desktop','离线方案'];
+  const target = labels[first];
+  document.querySelectorAll('.nav-btn-sm').forEach(b => {
+    b.classList.toggle('active', b.dataset.target === target);
+  });
+});
+document.querySelectorAll('.concept').forEach(c => observer.observe(c));
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = Math.min(window.scrollY / h * 100, 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+</script>
+
+</body>
+</html>
